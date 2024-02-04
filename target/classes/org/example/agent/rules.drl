@@ -1,0 +1,44 @@
+/*
+ * Copyright 2015 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+*/
+
+package com.example.agent;
+
+global java.util.Set controlSet;
+
+
+rule "Find the highest rank" salience 3
+lock-on-active
+when
+    $max : Number() from accumulate( Agent($score : score),
+                    max( $score ))
+	$agent : Agent( score == $max)
+then
+	modify( $agent ){ setRank( 1 ) }
+	controlSet.add($max);
+end
+
+
+rule "Find the 2nd highest rank" salience 2
+lock-on-active
+no-loop
+when
+	$remainingAgent : Agent(rank < 0)
+    $max : Number() from accumulate( Agent( name == $remainingAgent.name, $score : score, $rank : rank),
+                    max( $score ))
+	$agent2 : Agent( score == $max, rank < 0)
+then
+	modify( $agent2 ){ setRank( 2 ) }
+	controlSet.add($max);
+end
