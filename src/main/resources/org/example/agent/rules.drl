@@ -17,7 +17,7 @@ package com.example.agent;
 
 global java.util.Set controlSet;
 
-
+/*
 rule "Find the highest rank" salience 3
 lock-on-active
 when
@@ -28,12 +28,13 @@ then
 	modify( $agent ){ setRank( 1 ) }
 	controlSet.add($agent);
 end
+*/
 
-rule "Find the 2nd highest rank" salience 2
+rule "Find the Top 3 agents" salience 2
 lock-on-active
 when
-	Agent($max: score) from accumulate(
-		$remainingAgent : Agent( rank < 0, $score : score, $rank : rank),
+	Agent($max1: score) from accumulate(
+		$remainingAgent : Agent( $score : score, $rank : rank),
 		init(Agent maxagent = null; int maxscore = 0; ),
 		action( if( $score > maxscore) {
 			maxagent = $remainingAgent;
@@ -42,11 +43,53 @@ when
 		result(maxagent)
 	)
 
-	$maxagent1: Agent( score == $max)
+	$maxagent1: Agent( score == $max1)
+
+	Agent($max2: score) from accumulate(
+		$remainingAgent : Agent( score < $max1, $score : score, $rank : rank),
+		init(Agent maxagent = null; int maxscore = 0; ),
+		action( if( $score > maxscore) {
+			maxagent = $remainingAgent;
+			maxscore = $score;
+		} ),
+		result(maxagent)
+	)
+
+	$maxagent2: Agent( score == $max2)
+
+	Agent($max3: score) from accumulate(
+		$remainingAgent : Agent( score < $max2, $score : score, $rank : rank),
+		init(Agent maxagent = null; int maxscore = 0; ),
+		action( if( $score > maxscore) {
+			maxagent = $remainingAgent;
+			maxscore = $score;
+		} ),
+		result(maxagent)
+	)
+
+	$maxagent3: Agent( score == $max3)
+
+	Agent($max4: score) from accumulate(
+		$remainingAgent : Agent( score < $max3, $score : score, $rank : rank),
+		init(Agent maxagent = null; int maxscore = 0; ),
+		action( if( $score > maxscore) {
+			maxagent = $remainingAgent;
+			maxscore = $score;
+		} ),
+		result(maxagent)
+	)
+
+	$maxagent4: Agent( score == $max4)
 	
 then
-	/* modify( $maxagent1 ){ setRank( 2 ) } */
+	modify( $maxagent1 ){ setRank( 1 ) }
+	modify( $maxagent2 ){ setRank( 2 ) }
+	modify( $maxagent3 ){ setRank( 3 ) }
+	modify( $maxagent4 ){ setRank( 4 ) }
 	controlSet.add($maxagent1);
+	controlSet.add($maxagent2);
+	controlSet.add($maxagent3);
+	controlSet.add($maxagent4);
 end
 
 /*
