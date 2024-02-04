@@ -112,7 +112,8 @@ public class RuleTest {
                 top = iterator.next();
                 int score = top.getScore();
                 int rank = top.getRank();
-                System.out.println("Agent with Rank " + rank + " has score " + score);
+                String name = top.getName();
+                System.out.println("Agent with Rank " + rank + " is " + name + " and has score " + score);
             }
 
             
