@@ -26,10 +26,50 @@ when
 	$agent : Agent( score == $max)
 then
 	modify( $agent ){ setRank( 1 ) }
-	controlSet.add($max);
+	controlSet.add($agent);
 end
 
+rule "Find the 2nd highest rank" salience 2
+lock-on-active
+when
+	Agent($max: score) from accumulate(
+		$remainingAgent : Agent( rank < 0, $score : score, $rank : rank),
+		init(Agent maxagent = null; int maxscore = 0; ),
+		action( if( $score > maxscore) {
+			maxagent = $remainingAgent;
+			maxscore = $score;
+		} ),
+		result(maxagent)
+	)
 
+	$maxagent1: Agent( score == $max)
+	
+then
+	/* modify( $maxagent1 ){ setRank( 2 ) } */
+	controlSet.add($maxagent1);
+end
+
+/*
+rule "Find the 3rd highest rank" salience 1
+lock-on-active
+when
+	Agent($max: score) from accumulate(
+		$remainingAgent : Agent( rank < 0, $score : score, $rank : rank),
+		init(Agent maxagent = null; int maxscore = 0; ),
+		action( if( $score > maxscore) {
+			maxagent = $remainingAgent;
+			maxscore = $score;
+		} ),
+		result(maxagent)
+	)
+	
+then
+	modify( $agent2 ){ setRank( 2 ) }
+	controlSet.add($max);
+end
+*/
+
+/*
 rule "Find the 2nd highest rank" salience 2
 lock-on-active
 no-loop
@@ -42,3 +82,4 @@ then
 	modify( $agent2 ){ setRank( 2 ) }
 	controlSet.add($max);
 end
+*/

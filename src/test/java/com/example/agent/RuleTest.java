@@ -68,7 +68,7 @@ public class RuleTest {
         try {
             LOG.info("Populating globals");
             //Set<Agent> check = new HashSet<Agent>();
-            Set<Integer> checkMax = new HashSet<Integer>();
+            Set<Agent> checkMax = new HashSet<Agent>();
             //session.setGlobal("controlSet", check);
             session.setGlobal("controlSet", checkMax);
 
@@ -104,13 +104,15 @@ public class RuleTest {
                 System.out.println("Agent Rank " + top.getRank() + " is " + top.getName());
             }
              */
-            Iterator<Integer> iterator = checkMax.iterator();
-            //Agent top= new Agent("",0,0);
+            Iterator<Agent> iterator = checkMax.iterator();
+            Agent top= new Agent("",0,0);
             
 
             while (iterator.hasNext()){
-                int i = ((Integer) iterator.next()).intValue();
-                System.out.println("Agent Rank " + " has " + i);
+                top = iterator.next();
+                int score = top.getScore();
+                int rank = top.getRank();
+                System.out.println("Agent with Rank " + rank + " has score " + score);
             }
 
             
